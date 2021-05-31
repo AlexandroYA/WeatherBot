@@ -103,8 +103,6 @@ def answer(message):
 	elif message.text.lower() == 'ты лучший' or message.text.lower() == 'ты супер':
 		bot.send_sticker(message.chat.id , "CAACAgIAAxkBAAIF_2BtqtWdZ7LvTNXZuWHRWpZHImQoAAL1AwACcBFhCNq3TDN6JU9hHgQ")
 		bot.send_message(message.chat.id , "Спасибо!")
-	elif message.text.lower()== 'ты пидр':
-		bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAIbVGCuiS7k-NsJd-UNOzHtAp8YGTlLAALZdQEAAWOLRgzB7X6CN74_WB8E' )
 	else:
 		bot.send_sticker(message.chat.id, 'CAACAgQAAxkBAAIbo2CukS6YjiohsrYRkYa6picrvWvhAAJmAAP44AQCLDkxgUcZcAgfBA')
 		bot.send_message(message.chat.id, "У меня el problema..Я вас не понимаю 😬")
