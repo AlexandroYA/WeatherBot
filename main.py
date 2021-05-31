@@ -1,6 +1,5 @@
-﻿import telebot
-import config
-bot = telebot.TeleBot(config.TOKEN)	
+import telebot
+bot = telebot.TeleBot("1756808541:AAGWdleEfSOPAKDv___PCKya5gslfk0zCDU")
 #СОЗДАНИЕ КЛАВИАТУРЫ
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True, True, True)
 keyboard1.add("Нефтеюганск").add("Актировка ❄").add("Погода 🌥").add("Уведомление")
@@ -9,18 +8,48 @@ def weather(message):
 	from pyowm import OWM
 	from pyowm.utils.config import get_default_config
 	config_dict = get_default_config()
-	config_dict['language'] = 'ru'  # Устанавливаю язык
+	config_dict['language'] = 'ru'
 	owm = OWM('0e8e832bc162b464e1a54f9b5af9c0e6',config_dict)
 	mgr = owm.weather_manager()
-	weather = mgr.weather_at_place('Нефтеюганск').weather
-	Observation = mgr.weather_at_place('Нефтеюганск')
-	temperature = weather.temperature()
-	temp_celcius = weather.temperature('celsius')['temp']
+	observation = mgr.weather_at_place('Нефтеюганск')
+	w = observation.weather
+	t = w.temperature('celsius')
+	#градусы
+	t = t['temp']
+	#ощущения
+	feeling = w.temperature('celsius')['feels_like']
+	#скорость ветра
+	Speed = w.wind()['speed']
+	#влажность
+	humi = w.humidity
+	#облачность
+	Clouds = w.clouds
+	#статус
+	status = w.detailed_status
+	#давление
+	pr = w.pressure['press']
+	#видимость
+	vd = w.visibility_distance
+	bot.send_message(message.chat.id,  f'''Сейчас в г.Нефтеюганск:
+Температура около {t} ℃
+Ощущается как {feeling} ℃
+Статус:  {status}
+Скорость ветра: {Speed} м/с
+Облачность: {Clouds} %
+Влажность: {humi} %
+Давление: {pr} мм.рт.ст
+Видимость: {vd} м.''')
+def url(message):
+    markup = telebot.types.InlineKeyboardMarkup()
+    pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/nefteugansk')
+    markup.add(pogoda)
+    bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
 
-	wind = Observation.weather.wind()["speed"]
-	status = weather.detailed_status
-	feel = weather.temperature('celsius')['feels_like']
-	bot.send_message(message.chat.id , "Сейчас в городе Нефтеюганск "  + str(status) + ".Погода около " + str(temp_celcius) +"℃.Ощущается как " + str(feel) +"℃. Скорость ветра - " + str(wind) + " м/с")
+def admin(message):
+    markup = telebot.types.InlineKeyboardMarkup()
+    pogoda = telebot.types.InlineKeyboardButton(text='Администрация города', url='http://www.admugansk.ru/')
+    markup.add(pogoda)
+    bot.send_message(message.chat.id, "Узнайте актировку на сайте администрации г.Нефтеюганск.", reply_markup = markup)
 
 place = ''
 number = ''
@@ -38,74 +67,108 @@ def answer(message):
 		bot.register_next_step_handler(message , place)
 	elif message.text.lower() == "нефтеюганск" :
 		weather(message)
+		url(message)
 	elif message.text.lower() == "помощь":
 		bot.send_message(message.chat.id,'''
 Как узнать погоду.
-Для того чтобы узнать погоду, нужно нажать на клавишу "Погода 🌥" или написать боту слово "погода" (можно писать как большими буквами, так и маленькими), без кавычек.
-Затем, ввести название города, в котором вы хотите узнать погоду (можно с маленькой буквы).Всё!
+Для того чтобы узнать погоду нужно нажать на клавишу "Погода 🌥" или написать боту слово "погода" (можно писать как большими буквами, так и маленькими) без кавычек. Затем, ввести название города, в котором вы хотите узнать погоду (можно с маленькой буквы или на английском языке).Всё!
 
-Клавиша "Нефтеюганск" отвечает за погодные данные в этом городе.
-Клавиша "Актировка ❄" отвечает за актировки в городе Нефтеюганск.
+Нефтеюганск и Актировки.
+Клавиша "Нефтеюганск" или слово "Нефтеюганск", написанное боту (большими или маленькими буквами) без кавычек, отвечают за погодные данные в этом городе.
+Клавиша "Актировка ❄" или слово "Актировка", написанное боту (большими или маленькими буквами) без кавычек, отвечают за актировки в городе Нефтеюганск.
 
-Как работает уведомление.
-Для того чтобы выставить уведомление, нужно нажать на клавишу "Уведомление" или написать боту слово "уведомление" (можно писать как большими буквами, так и маленькими), без кавычек.
-Затем, после сообщения "Введите время:" от бота вы должны вписать число (в часах),то есть, через какое время вы хотите получить погодные данные.
-Например: Вы вводите 5.25, это значит, что через 5 часов 25 минут вам придёт уведомление о погоде.0.01 это 1 минута, 1.00 это 1 час и тд.
-Пока что уведомления расспространяются только на город Нефтеюганск и показываются ЕДИНОЖДЫ (только 1 раз).Потом нужно вводить время заново. 
-Если случайно нажали на клавишу "Уведомление" (не хотели выставлять уведомления) напишите "-" боту.
+Как работают уведомления.
+Для того чтобы выставить уведомление, нужно нажать на клавишу "Уведомление" или написать боту слово "уведомление" (можно писать как большими буквами, так и маленькими) без кавычек. Затем, после сообщения "Введите время:" от бота вы должны вписать число (в часах),то есть, через какое время вы хотите получить погодные данные. Например: Вы вводите 5.25, это значит, что через 5 часов 25 минут вам придёт уведомление о погоде. Еще примеры: 0.01 это 1 минута, 1.00 или 1 это 1 час и тд. Пока что уведомления распространяются только на город Нефтеюганск и показываются ЕДИНОЖДЫ (только 1 раз).Потом нужно проделывать все действия заново.  Если случайно нажали на клавишу "Уведомление" (не хотели выставлять уведомления) напишите "-" боту.
 
-Бот отвечает на фразы: "Привет", "Здравствуйте", "Пока", "До свидания", "Как дела", реагирует на текст и тд.Его даже можно похвалить, написав "Ты лучший".
+Бот отвечает на фразы: "Привет", "Здравствуйте", "Пока", "До свидания", "Как дела", реагирует на текст, стикеры, может отправить вам песню и тд.Его даже можно похвалить, написав "Ты лучший" или "Ты супер".
  ''')
 	elif message.text == "Уведомление" or message.text.lower() == "уведомление":
-		bot.send_message(message.from_user.id , "Введите время: (пример - 0.02 это 2 минуты. 1.00 это 1 час)")
+		bot.send_message(message.from_user.id , "Введите время: (пример: 0.02 это 2 минуты. 2.00 или 2 это 2 часа)")
 		bot.register_next_step_handler(message , number)
-		
-	elif message.text == "Актировка ❄":
-		bot.send_sticker(message.chat.id , 'CAACAgQAAxkBAAICWmBrM1HNHi_BunJhqJCfeixr6AgPAAJSAANYbbUuT78Ij70qRAYeBA')
-		bot.send_message(message.chat.id , "К сожалению, Актировки НЕТ.Занятия проводятся в обычном режиме.Удачи..")
+	elif message.text == "Актировка ❄" or message.text.lower()== 'актировка':
+		admin(message)
 	elif (message.text.lower() == 'привет' or message.text.lower() == 'здравствуйте' or message.text.lower() == 'здравствуй'):
 		bot.send_message(message.chat.id, "Здравствуйте!")
 	elif message.text.lower() == 'как дела?' or message.text.lower() == 'как дела':
-		bot.send_message(message.chat.id , "Норм.")
+		bot.send_message(message.chat.id , "Это новый Каддилак!")
 	elif message.text.lower() == "песня":
 		bot.send_message(message.chat.id , "Хит")
 		audio = open("chin chan.mp3" , "rb")
 		bot.send_audio(message.chat.id , audio )
 		audio.close()
-	elif (message.text.lower() == "александр" or message.text.lower() == "саша"):
-		bot.send_message(message.chat.id , "Александр Явонов - мой создатель 🤖.Что я могу про него сказать..Гений")
+	elif (message.text.lower() == "александр" or message.text.lower() == "саша" or message.text.lower() == 'автор') :
+		bot.send_message(message.chat.id , "Александр Явонов - мой создатель 👦.Что я могу про него сказать..Гений")
 	elif (message.text.lower() == "пока" or message.text.lower() == "до свидания"):
 		bot.send_message(message.chat.id , "До связи!")
 	elif message.text.lower() == 'ты лучший' or message.text.lower() == 'ты супер':
 		bot.send_sticker(message.chat.id , "CAACAgIAAxkBAAIF_2BtqtWdZ7LvTNXZuWHRWpZHImQoAAL1AwACcBFhCNq3TDN6JU9hHgQ")
 		bot.send_message(message.chat.id , "Спасибо!")
+	elif message.text.lower()== 'ты пидр':
+		bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAIbVGCuiS7k-NsJd-UNOzHtAp8YGTlLAALZdQEAAWOLRgzB7X6CN74_WB8E' )
 	else:
-		bot.send_message(message.chat.id, "Я вас не понимаю 😬")
+		bot.send_sticker(message.chat.id, 'CAACAgQAAxkBAAIbo2CukS6YjiohsrYRkYa6picrvWvhAAJmAAP44AQCLDkxgUcZcAgfBA')
+		bot.send_message(message.chat.id, "У меня el problema..Я вас не понимаю 😬")
 
 #РЕАКЦИЯ НА СТИКЕРЫ.
 @bot.message_handler(content_types = ['sticker'])
 def otvet(message):
-	bot.send_message(message.chat.id , "Зачем мне стикер?!Думаешь МНЕ не все равно?")
+	photo = open("1.jpg","rb")
+	bot.send_photo(message.chat.id, photo)
+	photo.close()
 #ПОГОДА ПО ВСЕМУ МИРУ
 def place(message):
 	place = message.text
 	#ПАРСИНГ С САЙТА
 	try:
+		from pyowm.commons.exceptions import NotFoundError
 		from pyowm import OWM
 		from pyowm.utils.config import get_default_config
-		from pyowm.commons.exceptions import NotFoundError
 		config_dict = get_default_config()
-		config_dict['language'] = 'ru'  # Устанавливаю язык
+		config_dict['language'] = 'ru'
 		owm = OWM('0e8e832bc162b464e1a54f9b5af9c0e6',config_dict)
 		mgr = owm.weather_manager()
-		weather = mgr.weather_at_place(place).weather
-		Observation = mgr.weather_at_place(place)
-		temperature = weather.temperature()
-		temp_celcius = weather.temperature('celsius')['temp']
-		wind = Observation.weather.wind()["speed"]
-		status = weather.detailed_status
-		feel = weather.temperature('celsius')['feels_like']
-		bot.send_message(message.chat.id , "Сейчас в городе " + place + " " + str(status) + ".Погода около " + str(temp_celcius) + "℃.Ощущается как " + str(feel) + "℃ " + ".Скорость ветра - "  + str(wind) + " м/с")
+		observation = mgr.weather_at_place(place)
+		w = observation.weather
+		t = w.temperature('celsius')
+		#градусы
+		t = t['temp']
+		#ощущения
+		feeling = w.temperature('celsius')['feels_like']
+		#скорость ветра
+		Speed = w.wind()['speed']
+		#влажность
+		humi = w.humidity
+		#облачность
+		Clouds = w.clouds
+		#статус
+		status = w.detailed_status
+		#давление
+		pr = w.pressure['press']
+		#видимость
+		vd = w.visibility_distance
+		bot.send_message(message.chat.id,  f'''Сейчас в г.{place}:
+Температура около {t} ℃
+Ощущается как {feeling} ℃
+Статус:  {status}
+Скорость ветра: {Speed} м/с
+Облачность: {Clouds} %
+Влажность: {humi} %
+Давление: {pr} мм.рт.ст
+Видимость: {vd} м.''')
+		try:
+			from textblob import TextBlob
+			blob = TextBlob(place)
+			translation = blob.translate(to='en')
+			markup = telebot.types.InlineKeyboardMarkup()
+			pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/' + str(translation))
+			markup.add(pogoda)
+			bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+		except:
+			markup = telebot.types.InlineKeyboardMarkup()
+			pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/' + str(place))
+			markup.add(pogoda)
+			bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+
 	except NotFoundError:
 		bot.send_message(message.chat.id , "Город не найден.Попробуйте проделать все действия заново и проверьте правильность введённых данных.")
 
@@ -124,7 +187,9 @@ def number(message):
 		while run < 1:
 			time.sleep(total)
 			weather(message)
+			url(message)
 			run = run + 1
+
 	except ValueError:
 		bot.send_message(message.chat.id , "Вы неправильно ввели время.Проделайте все действия заново.")
 
