@@ -1,5 +1,5 @@
 import telebot
-bot = telebot.TeleBot("1756808541:AAGWdleEfSOPAKDv___PCKya5gslfk0zCDU")
+bot = telebot.TeleBot("1756808541:AAGWdleEfSOPAKDv___PCKya5gslfk0zCDU")	
 #СОЗДАНИЕ КЛАВИАТУРЫ
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True, True, True)
 keyboard1.add("Нефтеюганск").add("Актировка ❄").add("Погода 🌥").add("Уведомление")
@@ -7,6 +7,7 @@ keyboard1.add("Нефтеюганск").add("Актировка ❄").add("По�
 def weather(message):
 	from pyowm import OWM
 	from pyowm.utils.config import get_default_config
+	from pyowm.utils import timestamps
 	config_dict = get_default_config()
 	config_dict['language'] = 'ru'
 	owm = OWM('0e8e832bc162b464e1a54f9b5af9c0e6',config_dict)
@@ -30,14 +31,15 @@ def weather(message):
 	pr = w.pressure['press']
 	#видимость
 	vd = w.visibility_distance
+
 	bot.send_message(message.chat.id,  f'''Сейчас в г.Нефтеюганск:
-Температура около {t} ℃
-Ощущается как {feeling} ℃
-Статус:  {status}
-Скорость ветра: {Speed} м/с
-Облачность: {Clouds} %
+Температура около {t} ℃ 
+Ощущается как {feeling} ℃ 
+Статус:  {status} 
+Скорость ветра: {Speed} м/с 
+Облачность: {Clouds} % 
 Влажность: {humi} %
-Давление: {pr} мм.рт.ст
+Давление: {pr} мм.рт.ст 
 Видимость: {vd} м.''')
 def url(message):
     markup = telebot.types.InlineKeyboardMarkup()
@@ -103,6 +105,8 @@ def answer(message):
 	elif message.text.lower() == 'ты лучший' or message.text.lower() == 'ты супер':
 		bot.send_sticker(message.chat.id , "CAACAgIAAxkBAAIF_2BtqtWdZ7LvTNXZuWHRWpZHImQoAAL1AwACcBFhCNq3TDN6JU9hHgQ")
 		bot.send_message(message.chat.id , "Спасибо!")
+	elif message.text.lower()== 'ты пидр':
+		bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAIbVGCuiS7k-NsJd-UNOzHtAp8YGTlLAALZdQEAAWOLRgzB7X6CN74_WB8E' )
 	else:
 		bot.send_sticker(message.chat.id, 'CAACAgQAAxkBAAIbo2CukS6YjiohsrYRkYa6picrvWvhAAJmAAP44AQCLDkxgUcZcAgfBA')
 		bot.send_message(message.chat.id, "У меня el problema..Я вас не понимаю 😬")
@@ -145,22 +149,28 @@ def place(message):
 		#видимость
 		vd = w.visibility_distance
 		bot.send_message(message.chat.id,  f'''Сейчас в г.{place}:
-Температура около {t} ℃
-Ощущается как {feeling} ℃
-Статус:  {status}
-Скорость ветра: {Speed} м/с
-Облачность: {Clouds} %
+Температура около {t} ℃ 
+Ощущается как {feeling} ℃ 
+Статус:  {status} 
+Скорость ветра: {Speed} м/с 
+Облачность: {Clouds} % 
 Влажность: {humi} %
-Давление: {pr} мм.рт.ст
+Давление: {pr} мм.рт.ст 
 Видимость: {vd} м.''')
 		try:
-			from textblob import TextBlob
-			blob = TextBlob(place)
-			translation = blob.translate(to='en')
-			markup = telebot.types.InlineKeyboardMarkup()
-			pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/' + str(translation))
-			markup.add(pogoda)
-			bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+			if place == "Санкт-Петербург" or place == "Санкт Петербург" or place == "Питер":
+				markup = telebot.types.InlineKeyboardMarkup()
+				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/saint-petersburg')
+				markup.add(pogoda)
+				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+			else:	
+				from textblob import TextBlob 
+				blob = TextBlob(place)
+				translation = blob.translate(to='en')
+				markup = telebot.types.InlineKeyboardMarkup()
+				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/' + str(translation))
+				markup.add(pogoda)
+				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
 		except:
 			markup = telebot.types.InlineKeyboardMarkup()
 			pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/' + str(place))
@@ -187,7 +197,7 @@ def number(message):
 			weather(message)
 			url(message)
 			run = run + 1
-
+			
 	except ValueError:
 		bot.send_message(message.chat.id , "Вы неправильно ввели время.Проделайте все действия заново.")
 
