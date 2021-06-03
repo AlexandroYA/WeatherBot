@@ -163,6 +163,12 @@ def place(message):
 				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/saint-petersburg')
 				markup.add(pogoda)
 				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+			elif place.lower() == "новый афон":
+				markup = telebot.types.InlineKeyboardMarkup()
+				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/new-athos')
+				markup.add(pogoda)
+				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
+
 			else:	
 				from textblob import TextBlob 
 				blob = TextBlob(place)
