@@ -105,6 +105,8 @@ def answer(message):
 	elif message.text.lower() == 'ты лучший' or message.text.lower() == 'ты супер':
 		bot.send_sticker(message.chat.id , "CAACAgIAAxkBAAIF_2BtqtWdZ7LvTNXZuWHRWpZHImQoAAL1AwACcBFhCNq3TDN6JU9hHgQ")
 		bot.send_message(message.chat.id , "Спасибо!")
+	elif message.text.lower()== 'ты пидр':
+		bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAIbVGCuiS7k-NsJd-UNOzHtAp8YGTlLAALZdQEAAWOLRgzB7X6CN74_WB8E' )
 	else:
 		bot.send_sticker(message.chat.id, 'CAACAgQAAxkBAAIbo2CukS6YjiohsrYRkYa6picrvWvhAAJmAAP44AQCLDkxgUcZcAgfBA')
 		bot.send_message(message.chat.id, "У меня el problema..Я вас не понимаю 😬")
@@ -166,7 +168,11 @@ def place(message):
 				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/new-athos')
 				markup.add(pogoda)
 				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
-
+			elif place.lower() == "тур":
+				markup = telebot.types.InlineKeyboardMarkup()
+				pogoda = telebot.types.InlineKeyboardButton(text='Яндекс.Погода', url='https://yandex.ru/pogoda/tours')
+				markup.add(pogoda)
+				bot.send_message(message.chat.id, "Если хотите, можете узнать погоду на сайте \"Яндекс.Погода\".", reply_markup = markup)
 			else:	
 				from textblob import TextBlob 
 				blob = TextBlob(place)
