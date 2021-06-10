@@ -1,5 +1,5 @@
 import telebot
-bot = telebot.TeleBot("1756808541:AAGWdleEfSOPAKDv___PCKya5gslfk0zCDU")	
+bot = telebot.TeleBot(ТОКЕН БОТА)	
 #СОЗДАНИЕ КЛАВИАТУРЫ
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True, True, True)
 keyboard1.add("Нефтеюганск").add("Актировка ❄").add("Погода 🌥").add("Уведомление")
